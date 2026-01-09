@@ -1,129 +1,177 @@
-# 🔄 AICW - AI批判式协作工作流
+# 🔄 AICW - AI Critic Collaboration Workflow
 
-> **让AI审查AI，你只管提需求**
+> **Let AI review AI, you just set the requirements.**
+>
+> **让AI审查AI，你只管提需求。**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-4.3.1-blue.svg)]()
+[![中文文档](https://img.shields.io/badge/文档-中文版-red.svg)](./README_CN.md)
 
 ---
 
-## 🎯 这是什么？
+## 🎯 What is this?
 
-AICW (AI Critic Collaboration Workflow) 是一套**让多个AI互相审查**的工作流。
+AICW (AI Critic Collaboration Workflow) is a workflow that enables **multiple AIs to review each other's work**.
 
-**核心理念**：不追求完美，只追求MVP（最小可行产品）。
+**Core Philosophy**: Don't pursue perfection, pursue MVP (Minimum Viable Product).
 
-- **只拦P0**（致命问题），其他的登记下来，先跑起来再说
-- **两轮审查**，强制停机，拒绝无限循环
-- **执行AI有权拒绝**不合理的优化建议
+- **Only block P0** (fatal issues), log everything else and start executing
+- **Two-round review**, forced termination, no infinite loops
+- **Executor AI can reject** unreasonable optimization suggestions
 
 ---
 
-## ⚡ 快速开始（3步）
+## 📦 Two Usage Modes
 
-### Step 1：复制 Executor Prompt
+### Mode 1: Multi-Model Collaboration (Recommended ⭐)
 
-把 [prompts/executor_prompt.md](./prompts/executor_prompt.md) 的内容设置为执行AI的System Prompt（Claude/GPT均可）
+**For: Claude (Executor) + GPT (Critic)** or any AI combination
 
-### Step 2：复制 Critic Prompt
+This is the author's actual approach. Leverage different AI strengths:
 
-把 [prompts/critic_prompt.md](./prompts/critic_prompt.md) 的内容设置为审查AI的System Prompt
-
-### Step 3：开始工作流
+- **Claude/Antigravity**: Strong execution, stable code generation
+- **GPT**: Strong logical reasoning, stricter review
 
 ```
-你(需求) → Executor(P1初稿) → Critic(C1全量扫描) 
-         → Executor(决策表+P2终稿) → Critic(C2放行) → 🚀开干
+Antigravity (Claude)              GPT
+      ↓                            ↓
+executor_prompt.md            critic_prompt.md
+      ↓                            ↓
+   Output Plan    ───copy───→   Output Review
+      ↓                            ↓
+   Revise Plan    ←──copy────   Flag P0 Issues
 ```
 
 ---
 
-## 🧠 核心规则
+### Mode 2: Claude Code Skill (Single Model)
 
-### P0判定尺（只有这3种情况才算P0）
+**For: Complete entire workflow within a single Claude session**
 
-| 类型 | 定义 | 示例 |
-|------|------|------|
-| **无法开始** | 第1步动作无法执行 | 缺关键输入/权限/资源 |
-| **无法验收** | 没有成/败标准 | 改完也不知道对不对 |
-| **红线风险** | 一执行就可能造成不可接受损失 | 安全/合规/资金暴露 |
+Place `skills/SKILL.md` in your project's `skills/` directory.
 
-### Stop Rule（硬性停机）
+```
+your-project/
+└── skills/
+    └── SKILL.md
+```
 
-满足任一条件，工作流**必须终止**：
-
-1. **P0清零**：审查者找不到任何P0
-2. **轮次耗尽**：到达第2轮（C2）结尾
-
-> ⚠️ 除非存在P0，否则**强制PASS**。残留P1/P2 **严禁**作为打回理由。
+> ⚠️ Note: Single-model review may be less effective than multi-model collaboration.
 
 ---
 
-## 📁 仓库结构
+## 🧠 Core Rules
+
+### P0 Criteria (Only these 3 cases qualify as P0)
+
+| Type | Definition | Example |
+|------|------------|---------|
+| **Cannot Start** | Step 1 cannot execute | Missing input/permission/resource |
+| **Cannot Verify** | No success/fail criteria | Can't tell if it's done right |
+| **Red Line Risk** | Execution causes unacceptable loss | Security/compliance/financial exposure |
+
+### Stop Rule (Hard Termination)
+
+Workflow **must terminate** when either condition is met:
+
+1. **P0 = 0**: Reviewer finds no P0 issues
+2. **Round limit**: Reached end of Round 2 (C2)
+
+> ⚠️ Unless P0 exists, **force PASS**. Remaining P1/P2 **cannot** be used as rejection reasons.
+
+---
+
+## 📁 Repository Structure
 
 ```
 AICW-Workflow/
-├── README.md                           # 你正在看的文件
-├── prompts/
-│   ├── executor_prompt.md              # 执行AI的System Prompt
-│   ├── critic_prompt.md                # 审查AI的System Prompt
-│   └── workflow_overview.md            # 工作流总览
+├── README.md                           # English (you are here)
+├── README_CN.md                        # 中文版
+├── prompts/                            # ⭐ Multi-model version (Recommended)
+│   ├── executor_prompt.md              # Executor AI Prompt (for Claude)
+│   ├── critic_prompt.md                # Critic AI Prompt (for GPT)
+│   └── workflow_overview.md            # Workflow overview
+├── skills/                             # Single-model version
+│   └── SKILL.md                        # Claude Code Skill
 ├── examples/
-│   └── case_knowledge_base.md          # 实战案例：3天搭建投资研究知识库
-├── CHANGELOG.md                        # 版本更新记录
-└── LICENSE                             # MIT License
+│   └── case_knowledge_base.md          # Case study
+├── CHANGELOG.md
+└── LICENSE
 ```
 
 ---
 
-## 📖 实战案例
+## 📖 Case Study
 
-使用这套工作流，我在**2天内产出112个研究文件**，相当于过去一个月的量。
+Using this workflow (Claude executor + GPT reviewer), I produced **112 research files in 2 days** — equivalent to a month's work.
 
-| 研究项目 | 文件数 | 耗时 |
-|----------|--------|------|
-| 塔勒布期权思维 | 44个 | 1天 |
-| 索罗斯反身性 | 68个 | 半天 |
+| Research Project | Files | Time |
+|------------------|-------|------|
+| Taleb Options Thinking | 44 | 1 day |
+| Soros Reflexivity | 68 | 0.5 day |
 
-详细案例请看：[examples/case_knowledge_base.md](./examples/case_knowledge_base.md)
-
----
-
-## 🔧 适用场景
-
-- ✅ 代码开发与审查
-- ✅ 项目规划
-- ✅ 研究报告产出
-- ✅ 市场分析
-- ✅ 任何需要"产出+检查"的场景
+**Key Value**: GPT review discovered a missing "Timeline" module (flagged as P0), forcing Claude to add it — something I wouldn't have caught myself.
 
 ---
 
-## 📝 版本历史
+## 🔧 Use Cases
 
-| 版本 | 日期 | 主要变更 |
-|------|------|----------|
-| V4.3.1 | 2026-01-09 | 增加P0判定尺、Stop Rule硬性停机 |
-| V4.0 | 2026-01-01 | 引入两轮审查机制 |
-| V3.0 | 2025-12-15 | 增加遗留风险承诺书 |
+- ✅ Code development & review
+- ✅ Project planning
+- ✅ Research report generation
+- ✅ Market analysis
+- ✅ Any scenario requiring "output + review"
 
 ---
 
-## 🤝 贡献
+## ❓ FAQ
 
-欢迎提Issue或PR！
+### Q: Why recommend multi-model over single-model?
 
-如果这个工作流对你有帮助，请给个 ⭐ Star，让更多人看到。
+**A**: Having one AI review its own output creates blind spots. Different AIs reviewing each other find more issues. Like code review shouldn't be done by the author.
+
+### Q: Can I use other AI combinations?
+
+**A**: Yes. For example:
+
+- Gemini (executor) + Claude (reviewer)
+- Claude (executor) + Claude (reviewer, different session)
+- Any combination works — the key is **two independent AI perspectives**
+
+### Q: What is Antigravity?
+
+**A**: Antigravity is a VSCode plugin / standalone app that provides free Claude Code access. Just log in with a Google account.
+
+---
+
+## 📝 Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| V4.3.1 | 2026-01-09 | Multi-model as recommended approach, P0 criteria |
+| V4.0 | 2026-01-01 | Two-round review mechanism |
+| V3.0 | 2025-12-15 | Risk commitment form |
+
+---
+
+## 🤝 Contributing
+
+Issues and PRs welcome!
+
+If this workflow helps you, please give it a ⭐ Star.
 
 ---
 
 ## 📜 License
 
-MIT License - 随便用，注明出处即可。
+MIT License
 
 ---
 
-## 👤 关于作者
+## 👤 Author
 
-- 公众号：Do a bit
-- 这套工作流的灵感来自 Boris Cherny（Claude Code之父）的分享
+- WeChat Public Account: **多少做点 do a bit**
+- Inspired by Boris Cherny (Claude Code creator)
+
+<img src="./assets/wechat_qrcode.jpg" width="200" alt="WeChat QR Code">
