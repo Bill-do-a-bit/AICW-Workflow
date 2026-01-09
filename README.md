@@ -6,32 +6,30 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-4.3.1-blue.svg)]()
-[![中文文档](https://img.shields.io/badge/文档-中文版-red.svg)](./README_CN.md)
 
 ---
 
-## 🎯 What is this?
+## 🎯 What is this? | 这是什么？
 
 AICW (AI Critic Collaboration Workflow) is a workflow that enables **multiple AIs to review each other's work**.
 
-**Core Philosophy**: Don't pursue perfection, pursue MVP (Minimum Viable Product).
+AICW（AI批判式协作工作流）是一套**让多个AI互相审查**的工作流。
 
-- **Only block P0** (fatal issues), log everything else and start executing
-- **Two-round review**, forced termination, no infinite loops
-- **Executor AI can reject** unreasonable optimization suggestions
+**Core Philosophy | 核心理念**: Don't pursue perfection, pursue MVP. | 不追求完美，只追求MVP。
+
+- **Only block P0** (fatal issues), log everything else and start executing | **只拦P0**（致命问题），其他的登记下来，先跑起来再说
+- **Two-round review**, forced termination, no infinite loops | **两轮审查**，强制停机，拒绝无限循环
+- **Executor AI can reject** unreasonable suggestions | **执行AI有权拒绝**不合理的优化建议
 
 ---
 
-## 📦 Two Usage Modes
+## 📦 Two Usage Modes | 两种使用方式
 
-### Mode 1: Multi-Model Collaboration (Recommended ⭐)
+### Mode 1: Multi-Model Collaboration ⭐ | 多模型协作（推荐）
 
-**For: Claude (Executor) + GPT (Critic)** or any AI combination
+**For | 适用于**: Claude (Executor) + GPT (Critic) or any AI combination
 
-This is the author's actual approach. Leverage different AI strengths:
-
-- **Claude/Antigravity**: Strong execution, stable code generation
-- **GPT**: Strong logical reasoning, stricter review
+This is the author's actual approach. | 这是作者实际在用的方式。
 
 ```
 Antigravity (Claude)              GPT
@@ -39,127 +37,93 @@ Antigravity (Claude)              GPT
 executor_prompt.md            critic_prompt.md
       ↓                            ↓
    Output Plan    ───copy───→   Output Review
-      ↓                            ↓
-   Revise Plan    ←──copy────   Flag P0 Issues
+   输出方案卡      ───复制───→   输出审查卡
 ```
 
----
-
-### Mode 2: Claude Code Skill (Single Model)
-
-**For: Complete entire workflow within a single Claude session**
+### Mode 2: Claude Code Skill | 单模型版
 
 Place `skills/SKILL.md` in your project's `skills/` directory.
 
-```
-your-project/
-└── skills/
-    └── SKILL.md
-```
-
-> ⚠️ Note: Single-model review may be less effective than multi-model collaboration.
+把 `skills/SKILL.md` 放到项目的 `skills/` 目录下即可。
 
 ---
 
-## 🧠 Core Rules
+## 🧠 Core Rules | 核心规则
 
-### P0 Criteria (Only these 3 cases qualify as P0)
+### P0 Criteria | P0判定尺
 
-| Type | Definition | Example |
-|------|------------|---------|
-| **Cannot Start** | Step 1 cannot execute | Missing input/permission/resource |
-| **Cannot Verify** | No success/fail criteria | Can't tell if it's done right |
-| **Red Line Risk** | Execution causes unacceptable loss | Security/compliance/financial exposure |
+| Type 类型 | Definition 定义 | Example 示例 |
+|-----------|-----------------|--------------|
+| **Cannot Start 无法开始** | Step 1 cannot execute 第1步无法执行 | Missing input 缺输入 |
+| **Cannot Verify 无法验收** | No success/fail criteria 没有成败标准 | Can't tell if done 不知道对不对 |
+| **Red Line Risk 红线风险** | Unacceptable loss 不可接受损失 | Security/compliance 安全合规 |
 
-### Stop Rule (Hard Termination)
+### Stop Rule | 硬性停机
 
-Workflow **must terminate** when either condition is met:
+Workflow **must terminate** when | 满足任一条件，工作流**必须终止**：
 
-1. **P0 = 0**: Reviewer finds no P0 issues
-2. **Round limit**: Reached end of Round 2 (C2)
+1. **P0 = 0**: No P0 issues found | 审查者找不到任何P0
+2. **Round limit**: Reached Round 2 (C2) | 到达第2轮结尾
 
-> ⚠️ Unless P0 exists, **force PASS**. Remaining P1/P2 **cannot** be used as rejection reasons.
+> ⚠️ Unless P0 exists, **force PASS**. | 除非存在P0，否则**强制PASS**。
 
 ---
 
-## 📁 Repository Structure
+## 📁 Repository Structure | 仓库结构
 
 ```
 AICW-Workflow/
-├── README.md                           # English (you are here)
-├── README_CN.md                        # 中文版
-├── prompts/                            # ⭐ Multi-model version (Recommended)
-│   ├── executor_prompt.md              # Executor AI Prompt (for Claude)
-│   ├── critic_prompt.md                # Critic AI Prompt (for GPT)
-│   └── workflow_overview.md            # Workflow overview
-├── skills/                             # Single-model version
-│   └── SKILL.md                        # Claude Code Skill
+├── README.md                    # Bilingual 双语文档
+├── prompts/                     # ⭐ Multi-model 多模型版
+│   ├── executor_prompt.md       # For Claude 给Claude
+│   ├── critic_prompt.md         # For GPT 给GPT
+│   └── workflow_overview.md
+├── skills/                      # Single-model 单模型版
+│   └── SKILL.md
 ├── examples/
-│   └── case_knowledge_base.md          # Case study
-├── CHANGELOG.md
-└── LICENSE
+│   └── case_knowledge_base.md   # Case study 实战案例
+└── assets/
+    └── wechat_qrcode.jpg
 ```
 
 ---
 
-## 📖 Case Study
+## 📖 Case Study | 实战案例
 
-Using this workflow (Claude executor + GPT reviewer), I produced **112 research files in 2 days** — equivalent to a month's work.
+Using this workflow, I produced **112 research files in 2 days** — equivalent to a month's work.
 
-| Research Project | Files | Time |
-|------------------|-------|------|
-| Taleb Options Thinking | 44 | 1 day |
-| Soros Reflexivity | 68 | 0.5 day |
+使用这套工作流，我在**2天内产出112个研究文件**，相当于过去一个月的量。
 
-**Key Value**: GPT review discovered a missing "Timeline" module (flagged as P0), forcing Claude to add it — something I wouldn't have caught myself.
+| Project 项目 | Files 文件数 | Time 耗时 |
+|--------------|--------------|-----------|
+| Taleb Options 塔勒布期权 | 44 | 1 day |
+| Soros Reflexivity 索罗斯反身性 | 68 | 0.5 day |
 
 ---
 
-## 🔧 Use Cases
+## 🔧 Use Cases | 适用场景
 
-- ✅ Code development & review
-- ✅ Project planning
-- ✅ Research report generation
-- ✅ Market analysis
-- ✅ Any scenario requiring "output + review"
+- ✅ Code development & review | 代码开发与审查
+- ✅ Project planning | 项目规划
+- ✅ Research reports | 研究报告
+- ✅ Market analysis | 市场分析
+- ✅ Any "output + review" scenario | 任何需要"产出+检查"的场景
 
 ---
 
 ## ❓ FAQ
 
-### Q: Why recommend multi-model over single-model?
+### Q: Why multi-model over single-model? | 为什么推荐多模型？
 
-**A**: Having one AI review its own output creates blind spots. Different AIs reviewing each other find more issues. Like code review shouldn't be done by the author.
+**A**: Having one AI review its own output creates blind spots. Different AIs find more issues.
 
-### Q: Can I use other AI combinations?
+让一个AI审查自己的输出，容易有盲区。用不同的AI互相审查，能发现更多问题。
 
-**A**: Yes. For example:
+### Q: What is Antigravity? | Antigravity是什么？
 
-- Gemini (executor) + Claude (reviewer)
-- Claude (executor) + Claude (reviewer, different session)
-- Any combination works — the key is **two independent AI perspectives**
+**A**: A VSCode plugin / standalone app that provides free Claude Code access.
 
-### Q: What is Antigravity?
-
-**A**: Antigravity is a VSCode plugin / standalone app that provides free Claude Code access. Just log in with a Google account.
-
----
-
-## 📝 Version History
-
-| Version | Date | Changes |
-|---------|------|---------|
-| V4.3.1 | 2026-01-09 | Multi-model as recommended approach, P0 criteria |
-| V4.0 | 2026-01-01 | Two-round review mechanism |
-| V3.0 | 2025-12-15 | Risk commitment form |
-
----
-
-## 🤝 Contributing
-
-Issues and PRs welcome!
-
-If this workflow helps you, please give it a ⭐ Star.
+一个VSCode插件/独立App，可以免费使用Claude Code。
 
 ---
 
@@ -169,9 +133,9 @@ MIT License
 
 ---
 
-## 👤 Author
+## 👤 Author | 关于作者
 
-- WeChat Public Account: **多少做点 do a bit**
+- WeChat 公众号: **多少做点 do a bit**
 - Inspired by Boris Cherny (Claude Code creator)
 
 <img src="./assets/wechat_qrcode.jpg" width="200" alt="WeChat QR Code">
